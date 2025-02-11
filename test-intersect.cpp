@@ -80,7 +80,8 @@ void time_hits(const Ray& ray, const Sphere& sphere) {
     t_alg = sphere.intersect_alg(ray);
     const auto end1 = std::chrono::high_resolution_clock::now();
     check_hit(t_alg, ray);
-    std::cout << "\tTotal time " << (end1 - start1) << '\n';
+    auto duration_alg = std::chrono::duration_cast<std::chrono::nanoseconds>(end1 - start1);
+    std::cout << "\tTotal time = " << duration_alg.count() << "ns\n";
 
     std::cout << "Geometric intersection\n";
     std::optional<double> t_geo;
@@ -88,7 +89,8 @@ void time_hits(const Ray& ray, const Sphere& sphere) {
     t_geo = sphere.intersect_alg(ray);
     const auto end2 = std::chrono::high_resolution_clock::now();
     check_hit(t_geo, ray);
-    std::cout << "\tTotal time " << (end2 - start2) << '\n';
+    auto duration_geo = std::chrono::duration_cast<std::chrono::nanoseconds>(end2 - start2);
+    std::cout << "\tTotal time = " << duration_geo.count() << "ns\n";
 }
 
 void draw_sphere(Pixels& pixels, const Sphere& sphere) {
