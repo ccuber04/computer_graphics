@@ -19,3 +19,23 @@ target_link_libraries(pixels PRIVATE png PUBLIC vector3d)
 # testing pixels class
 add_executable(test-pixels test-pixels.cpp)
 target_link_libraries(test-pixels PRIVATE pixels)
+
+# shapes
+add_library(shapes
+        ray.h ray.cpp
+        sphere.h sphere.cpp
+        hit.h hit.cpp)
+target_link_libraries(shapes PUBLIC vector3d)
+
+# testing shapes
+add_executable(test-intersect test-intersect.cpp)
+target_link_libraries(test-intersect PRIVATE shapes pixels)
+
+# camera
+add_library(camera
+        camera.h camera.cpp)
+target_link_libraries(camera PUBLIC vector3d)
+
+# testing camera
+add_executable(test-camera test-camera.cpp)
+target_link_libraries(test-camera PRIVATE vector3d shapes pixels camera)

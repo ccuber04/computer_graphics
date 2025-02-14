@@ -7,19 +7,19 @@ Pixels::Pixels(int columns, int rows)
     :columns{columns}, rows{rows}, values(columns*rows) {}
 
 const Color& Pixels::operator()(int row, int col) const {
-    if (row >= 0 && row < rows && col >=0 && col < columns) {
-        return values[row*columns + col];
+    if (row < 0 || row > rows || col < 0 || col > columns) {
+        throw std::out_of_range("Pixel coordinates are out of range.");
     }
     else {
-        throw std::out_of_range("Pixel coordinates are out of range.");
+        return values.at(row*columns + col);
     }
 }
 Color& Pixels::operator()(int row, int col) {
-    if (row >= 0 && row < rows && col >=0 && col < columns) {
-        return values[row*columns + col];
+    if (row < 0 || row > rows || col < 0 || col > columns) {
+        throw std::out_of_range("Pixel coordinates are out of range.");
     }
     else {
-        throw std::out_of_range("Pixel coordinates are out of range.");
+        return values.at(row*columns + col);
     }
 }
 
