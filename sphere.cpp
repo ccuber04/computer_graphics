@@ -2,8 +2,8 @@
 #include "constants.h"
 #include <cmath>
 
-Sphere::Sphere(const Point3D& center, double radius)
-    :center{center}, radius{radius} {
+Sphere::Sphere(const Point3D& center, double radius, const Material* material)
+        :center{center}, radius{radius}, material{material} {
     if (radius < 0) {
         throw std::runtime_error("Radius cannot be negative");
     }
@@ -13,7 +13,7 @@ Hit Sphere::construct_hit(const Ray& ray, double time) const {
     // calculate the surface normal
     Point3D point = ray.at(time);
     Vector3D normal = (point - center) / radius;
-    return Hit{time, point, normal};
+    return Hit{time, point, normal, this};
 }
 
 std::optional<double> Sphere::intersect_alg(const Ray& ray) const { // algebraic intersection
@@ -62,9 +62,10 @@ std::optional<double> Sphere::intersect_geo(const Ray& ray) const{ // geometric 
     if (t_neg > Constants::epsilon) {
         return t_neg;
     }
-    else {
+    else if (t_pos > Constants::epsilon) {
         return t_pos;
     }
+    return {};
 }
 
 std::ostream& operator<<(std::ostream& os, const Sphere& sphere) {

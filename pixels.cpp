@@ -4,7 +4,7 @@
 #include <cmath>
 
 Pixels::Pixels(int columns, int rows)
-    :columns{columns}, rows{rows}, values(columns*rows) {}
+        :columns{columns}, rows{rows}, values(columns*rows) {}
 
 const Color& Pixels::operator()(int row, int col) const {
     if (row < 0 || row > rows || col < 0 || col > columns) {
@@ -81,8 +81,8 @@ void Pixels::save_png(const std::string& filename) {
 }
 
 double gamma_correction(double value) {
-//     double gamma = 2.2;
-     double gamma = 1.0;
+    double gamma = 2.2; // increase brightness
+//     double gamma = 1.0; // used for gradients
 //     double gamma = 0.7;
     return std::pow(value, 1/gamma);
 }

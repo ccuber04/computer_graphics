@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(raytracer)
 
 # adjust any compiler settings
-add_compile_options(-g -Wall -Wextra -pedantic -std=c++20)
+add_compile_options(-g -Wall -Wextra -pedantic -std=c++20 -flto -O3)
 
 # add library for vector class and operations
 add_library(vector3d vector3d.h vector3d.cpp)
@@ -32,10 +32,23 @@ add_executable(test-intersect test-intersect.cpp)
 target_link_libraries(test-intersect PRIVATE shapes pixels)
 
 # camera
-add_library(camera
-        camera.h camera.cpp)
+add_library(camera camera.h camera.cpp)
 target_link_libraries(camera PUBLIC vector3d)
 
 # testing camera
 add_executable(test-camera test-camera.cpp)
 target_link_libraries(test-camera PRIVATE vector3d shapes pixels camera)
+
+# testing world
+add_executable(test-world test-world.cpp world.cpp random.h random.cpp)
+target_link_libraries(test-world PRIVATE camera pixels shapes png)
+
+# testing random
+add_executable(test-random test-random.cpp random.h random.cpp)
+target_link_libraries(test-random PRIVATE  vector3d)
+
+# test materials
+add_executable(test-materials test-materials.cpp world.h world.cpp camera.h camera.cpp random.h random.cpp
+        material.h material.cpp diffuse.h diffuse.cpp
+        glass.h glass.cpp)
+target_link_libraries(test-materials PRIVATE pixels shapes)

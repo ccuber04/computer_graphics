@@ -1,13 +1,15 @@
 #pragma once
 
 #include "point3d.h"
-#include "ray.h"
 #include "hit.h"
+#include "ray.h"
 #include <optional>
+
+class Material;
 
 class Sphere {
 public:
-    Sphere(const Point3D& center, double radius); // error handle negative radius
+    Sphere(const Point3D& center, double radius, const Material* material=nullptr);
     Hit construct_hit(const Ray& ray, double time) const;
 
     std::optional<double> intersect_alg(const Ray& ray) const; // algebraic
@@ -16,6 +18,8 @@ public:
 
     Point3D center;
     double radius;
+
+    const Material* material;
 };
 
 std::ostream& operator<<(std::ostream& os, const Sphere& sphere);
