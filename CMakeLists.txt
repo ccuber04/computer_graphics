@@ -50,5 +50,18 @@ target_link_libraries(test-random PRIVATE  vector3d)
 # test materials
 add_executable(test-materials test-materials.cpp world.h world.cpp camera.h camera.cpp random.h random.cpp
         material.h material.cpp diffuse.h diffuse.cpp
+        lambertian.h lambertian.cpp
+        specular.h specular.cpp
+        metallic.h metallic.cpp
         glass.h glass.cpp)
 target_link_libraries(test-materials PRIVATE pixels shapes)
+
+# test parser
+#add_executable(test-parser test-parser.cpp world.h world.cpp camera.h camera.cpp random.h random.cpp
+#        material.h material.cpp diffuse.h diffuse.cpp
+#        lambertian.h lambertian.cpp
+#        specular.h specular.cpp
+#        metallic.h metallic.cpp
+#        glass.h glass.cpp
+#        parser.h parser.cpp)
+#target_link_libraries(test-parser PRIVATE pixels shapes)

@@ -20,4 +20,5 @@ public:
 };
 
 Vector3D reflect(const Vector3D& v, const Vector3D& normal);
-Vector3D refract(const Vector3D& v, const Vector3D& normal, double index_ration);
+Vector3D refract(const Vector3D& v, const Vector3D& normal, double index_ratio);
+double schlick(double cos_theta, double index_ratio);

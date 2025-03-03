@@ -23,6 +23,7 @@ const Color Navy = {0, 0.1484, 0.3281};
 const Color Aquamarine = {0.4843, 1.0, 0.8281};
 const Color Sapphire = {0.0703, 0.3789, 0.5};
 const Color Azure = {0.0742, 0.3867, 0.9336};
+const Color Zaffre = {0.0, 0.078, 0.659};
 const Color Sun = {1.0, 0.8984, 0};
 const Color Fire = {1.0, 0.2695, 0};
 const Color Crimson = {0.8789, 0.0859, 0.1133};
