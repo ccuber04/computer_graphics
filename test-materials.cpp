@@ -1,10 +1,14 @@
 #include "camera.h"
 #include "color.h"
 #include "diffuse.h"
+#include "glass.h"
 #include "hit.h"
+#include "lambertian.h"
+#include "metallic.h"
 #include "pixels.h"
 #include "random.h"
 #include "ray.h"
+#include "specular.h"
 #include "sphere.h"
 #include "world.h"
 
@@ -17,29 +21,46 @@ Color trace_path(const World& world, const Ray& ray, int depth);
 
 int main() {
     // world
-    Diffuse red{Red, false};
-    Diffuse blue{Blue, true};
-    Diffuse grey{Gray, false};
-    Diffuse light{White, true};
+    Diffuse purple{Purple, false};
+    Diffuse light{White + White, true};
+    Lambertian gray{Gray, false};
+    Lambertian sapphirel{Sapphire, false};
+    Lambertian bluel{Blue, false};
+    Specular grays{Gray, false};
+    Specular crimsons{Crimson, false};
+    Glass glass{Fire, false};
+    Metallic forestm{Forest, false, 0.3};
 
     World world;
-    world.add({0, 0, 0}, 0.3, &red);
-    world.add({1, 0, 0}, 0.3, &red);
-    world.add({0, 0, -100}, 100, &grey);
-    world.add({110, 0, 0}, 100, &light);
+    // left
+    world.add({-1.5, 1, 0.3}, 0.5, &forestm);
+    world.add({-2, -0.5, 0.3}, 0.5, &glass);
+    world.add({-0.8, -1.5, 0.3}, 0.5, &bluel);
+
+    // center
+    world.add({0, 2, 0.3}, 1, &grays);
+
+    // right
+    world.add({1.5, 1, 0.3}, 0.5, &sapphirel);
+    world.add({2, -0.5, 0.3}, 0.5, &purple);
+    world.add({0.8, -1.5, 0.3}, 0.5, &crimsons);
+
+    // extras
+    world.add({0, 0, -100}, 100, &gray);
+    world.add({100, -100, 100}, 150, &light);
 
     // specify the number of pixels
-    Pixels pixels{1280, 720};
+    Pixels pixels{1920, 1080};
 
     // create the camera
-    Vector3D position{10, -20, 5}, up{0, 0, 1};
+    Vector3D position{0, -20, 10}, up{0, 0, 1};
     Vector3D target{0, 0, 0};
     double fov{20};
     double aspect = static_cast<double>(pixels.columns) / pixels.rows;
     Camera camera{position, target, up, fov, aspect};
 
-    constexpr int samples = 100;
-    constexpr int ray_depth = 5;
+    constexpr int samples = 1000;
+    constexpr int ray_depth = 10;
 
     // track progress
     const long long total_rays = static_cast<long long>(samples) * pixels.rows * pixels.columns;
@@ -62,7 +83,7 @@ int main() {
             pixels(row, col) /= samples;
         }
     }
-    std::string filename{"sphere.png"};
+    std::string filename{"sphere6.png"};
     pixels.save_png(filename);
     std::cout << "Wrote " << filename << '\n';
 }
