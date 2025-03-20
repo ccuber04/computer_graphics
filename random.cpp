@@ -6,7 +6,7 @@
 
 double random_double() {
     static std::random_device rd;
-    static std::mt19937 engine{rd()};  // Pass seed into engine()
+    static std::minstd_rand engine{rd()};
     static std::uniform_real_distribution<double> distribution{0.0, 1.0};
     return distribution(engine);
 }

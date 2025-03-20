@@ -19,6 +19,7 @@
 void print_progress(long long ray_num, long long total_rays);
 Color trace(const World& world, const Ray& ray);
 Color trace_path(const World& world, const Ray& ray, int depth);
+Color trace_path_iter(const World& world, const Ray& ray, int depth);
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -46,6 +47,7 @@ int main(int argc, char* argv[]) {
                 // cast samples number of rays
                 Ray ray = camera.compute_ray(x, y);
                 pixels(row, col) += trace_path(world, ray, ray_depth);
+//                pixels(row, col) += trace_path_iter(world, ray, ray_depth);
 
                 ++ray_num;
                 if (ray_num % (total_rays / 100) == 0) {
@@ -94,4 +96,32 @@ Color trace_path(const World& world, const Ray& ray, int depth) {
     // no bounce
     Ray scattered = material->scatter(ray, hit.value());
     return material->color * trace_path(world, scattered, depth - 1);
+}
+
+Color trace_path_iter(const World& world, const Ray& ray, int depth) {
+    Ray r = ray;
+    Color color = White;
+
+    while (depth > 0) {
+        std::optional<Hit> hit = world.find_nearest(r);
+        if (!hit) {
+            return Black;  // artifacts, perhaps?
+        }
+
+        const Material* material = hit->sphere->material;
+        color *= material->color;
+        if (material->emitting) {
+            return color;
+        }
+
+        r = material->scatter(ray, hit.value());
+        --depth;
+    }
+
+    if (depth == 0) {
+        return Black;
+    }
+    else {
+        return color;
+    }
 }

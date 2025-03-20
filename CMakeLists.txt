@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(raytracer)
 
 # adjust any compiler settings
-add_compile_options(-g -p -Wall -Wextra -pedantic -std=c++20 -flto -O3)
+add_compile_options(-g -Wall -Wextra -pedantic -std=c++20 -flto -O3)
 
 # add library for vector class and operations
 add_library(vector3d vector3d.h vector3d.cpp)
