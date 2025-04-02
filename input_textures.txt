@@ -1,0 +1,50 @@
+# textures
+texture sapphire solid (0.0703 0.3789 0.5)
+texture orange solid (1 0.15 0)
+texture fire solid (1 0.04 0)
+texture zaffre solid (0 0.078 0.659)
+texture navy solid (0 0.0484 0.1281)
+texture forest solid (0.0719 0.1711 0.0758)
+
+texture light solid (2 2 2)
+texture ground solid (0.5 0.5 0.5)
+
+texture grad gradient (1 0 0) (0 0 1)
+texture earth image earth.png
+texture grid image grid.png
+texture solid_image image solid.png
+texture checker checkerboard (1 1 1) (0 0 0)
+texture normal normal
+texture interesting interesting
+
+# materials
+material light diffuse light true
+material ground diffuse ground false
+
+material sapphire_lamb diffuse sapphire false
+material orange_lamb lambertian orange false
+material fire_lamb metallic fire false 0.5
+material zaffre_lamb specular zaffre false
+material navy_lamb glass navy false
+material forest_lamb specular forest false
+
+# floor
+sphere (0 0 -1000) 1000 ground
+
+# light
+sphere (0 -100 1012) 1000 light
+
+# spheres
+sphere (-5 0 1) 1 sapphire_lamb
+sphere (-3 0 1) 1 orange_lamb
+sphere (-1 0 1) 1 fire_lamb
+sphere (1 0 1) 1 zaffre_lamb
+sphere (3 0 1) 1 navy_lamb
+sphere (5 0 1) 1 forest_lamb
+
+# rendering
+threads 7
+rays 10 1000
+camera (1 -8 1) (0 0 1) (0 0 1) 90
+pixels 1280 720
+output solid2.png

@@ -3,7 +3,7 @@
 
 class Diffuse : public Material {
 public:
-    Diffuse(Color color, bool emitting);
+    Diffuse(const Texture* texture, bool emitting);
 
     Ray scatter(const Ray& ray, const Hit& hit) const override;
 };

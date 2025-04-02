@@ -1,12 +1,23 @@
-# materials
-material diffuse diffuse (1 0 0) false
-material light diffuse (1 1 1) true
+# textures
+texture red solid (1 0 0)
+texture light solid (2 2 2)
+texture ground solid (0.5 0.5 0.5)
 
-material lamb lambertian (0.6 0.5 0.2) false
-material glass glass (1 1 1) false
-material metal metallic (0.6 0.8 0.4) false 0.5
-material mirror specular (1 1 1) false
-material ground diffuse (0.5 0.5 0.5) false
+texture grad gradient (1 0 0) (0 0 1)
+texture earth image earth.png
+texture checker checkerboard (1 1 1) (0 0 0)
+texture normal normal
+texture interesting interesting
+
+# materials
+material diffuse diffuse red false
+material light diffuse light true
+material lamb_grad lambertian grad false
+material ground diffuse ground false
+material earth lambertian earth false
+material checkers metallic checker false 0.5
+material surface_norm specular normal false
+material glass lambertian interesting false
 
 # floor
 sphere (0 0 -1000) 1000 ground
@@ -16,11 +27,19 @@ sphere (0 0 1012) 1000 light
 
 # spheres
 sphere (-6 0 1) 1 diffuse
-sphere (-3 0 1) 1 lamb
-sphere (0 0 1) 1 metal
-sphere (3 0 1) 1 mirror
-sphere (6 0 1) 1 glass
+sphere (-3 0 1) 1 lamb_grad
+sphere (-10 0 1) 1 earth
+sphere (3 0 1) 1 checkers
+sphere (6 0 1) 1 surface_norm
+sphere (0 0 1) 1 glass
 
+# triangle
+triangle (-1 -5 0) (1 -5 0) (0 -5 1) lamb_grad
+
+# mesh
+#mesh (0 0 0) pyramid.txt glass
+mesh (2 0 0) pyramid.txt glass
+mesh (-2 0 0) pyramid.txt glass
 
 # rendering
 threads 7

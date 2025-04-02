@@ -4,10 +4,17 @@
 #include "camera.h"
 #include "pixels.h"
 #include "sphere.h"
+#include "triangle.h"
 #include "glass.h"
 #include "metallic.h"
 #include "lambertian.h"
 #include "specular.h"
+#include "solid.h"
+#include "gradient.h"
+#include "checkerboard.h"
+#include "image.h"
+#include "normal.h"
+#include "interesting.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -65,11 +72,20 @@ void Parser::parse(std::ifstream& input) {
             if (type == "material") {
                 parse_material(ss);
             }
+            else if (type == "texture") {
+                parse_texture(ss);
+            }
             else if (type == "camera") {
                 parse_camera(ss);
             }
             else if (type == "sphere") {
                 parse_sphere(ss);
+            }
+            else if (type == "triangle") {
+                parse_triangle(ss);
+            }
+            else if (type == "mesh") {
+                parse_mesh(ss);
             }
             else if (type == "output") {
                 parse_output(ss);
@@ -119,30 +135,30 @@ void Parser::verify() {
 }
 
 void Parser::parse_material(std::stringstream& ss) {
-    std::string name, kind;
-    Color color;
+    std::string name, kind, texture_name;
     bool emitting;
-    ss >> name >> kind >> color >> std::boolalpha >> emitting;
+    ss >> name >> kind >> texture_name >> std::boolalpha >> emitting;
+    Texture* texture = get_texture(texture_name);
     if (kind == "diffuse") {
-        materials[name] = std::make_unique<Diffuse>(color, emitting);
+        materials[name] = std::make_unique<Diffuse>(texture, emitting);
     }
     else if (kind == "lambertian") {
-        materials[name] = std::make_unique<Lambertian>(color, emitting);
+        materials[name] = std::make_unique<Lambertian>(texture, emitting);
     }
     else if (kind == "specular") {
-        materials[name] = std::make_unique<Specular>(color, emitting);
+        materials[name] = std::make_unique<Specular>(texture, emitting);
     }
     else if (kind == "metallic") {
         double fuzz;
         if (ss >> fuzz) {
-            materials[name] = std::make_unique<Metallic>(color, emitting, fuzz);
+            materials[name] = std::make_unique<Metallic>(texture, emitting, fuzz);
         }
         else {
             throw std::runtime_error("Missing fuzz parameter for metal");
         }
     }
     else if (kind == "glass") {
-        materials[name] = std::make_unique<Glass>(color, emitting);
+        materials[name] = std::make_unique<Glass>(texture, emitting);
     }
     else {
         throw std::runtime_error("Unknown material: " + kind);
@@ -159,6 +175,63 @@ Material* Parser::get_material(const std::string& material) {
     }
 }
 
+void Parser::parse_texture(std::stringstream& ss) {
+    std::string name, kind;
+    ss >> name >> kind;
+    if (kind == "solid") {
+        Color color;
+        if (ss >> color) {
+            textures[name] = std::make_unique<Solid>(color);
+        }
+        else {
+            throw std::runtime_error("Missing color for " + kind + " texture: " + name);
+        }
+    }
+    else if (kind == "gradient") {
+        Color a, b;
+        if (ss >> a >> b) {
+            textures[name] = std::make_unique<Gradient>(a, b);
+        }
+        else {
+            throw std::runtime_error("Missing color for " + kind + " texture: " + name);
+        }
+    }
+    else if (kind == "image") {
+        std::string file;
+        if (ss >> file) {
+            textures[name] = std::make_unique<Image>(file);
+        }
+        else {
+            throw std::runtime_error("Missing color for " + kind + " texture: " + name);
+        }
+    }
+    else if (kind == "checkerboard") {
+        Color a, b;
+        if (ss >> a >> b) {
+            textures[name] = std::make_unique<Checkerboard>(a, b);
+        }
+    }
+    else if (kind == "normal") {
+        textures[name] = std::make_unique<Normal>();
+    }
+    else if (kind == "interesting") {
+        textures[name] = std::make_unique<Interesting>();
+    }
+    else {
+        throw std::runtime_error("Unknown texture: " + kind);
+    }
+}
+
+Texture* Parser::get_texture(const std::string& texture) {
+    auto i = textures.find(texture);
+    if (i != textures.end()) {
+        return i->second.get();
+    }
+    else {
+        throw std::runtime_error("Unknown texture: " + texture);
+    }
+}
+
 void Parser::parse_sphere(std::stringstream& ss) {
     Vector3D center;
     double radius;
@@ -172,6 +245,66 @@ void Parser::parse_sphere(std::stringstream& ss) {
         throw std::runtime_error("Malformed sphere");
     }
 }
+
+void Parser::parse_triangle(std::stringstream& ss) {
+    Vector3D v0, v1, v2;
+    std::string material_name;
+    if (ss >> v0 >> v1 >> v2 >> material_name) {
+        const Material* material = get_material(material_name);
+        std::unique_ptr<Object> object = std::make_unique<Triangle>(v0, v1, v2, material);
+        world.add(std::move(object));
+    }
+    else {
+        throw std::runtime_error("Malformed triangle");
+    }
+}
+
+void Parser::parse_mesh(std::stringstream& ss) {
+    // mesh position filename material_name
+    Vector3D position;
+    std::string filename, material_name;
+    if (!(ss >> position >> filename >> material_name)) {
+        throw std::runtime_error("Malformed mesh");
+    }
+
+    const Material* material = get_material((material_name));
+
+    std::ifstream input{filename};
+    if (!input) {
+        throw std::runtime_error("Cannot open mesh file: " + filename);
+    }
+
+    std::string temp;
+    input >> temp;
+    if (temp != "vertices") {
+        throw std::runtime_error("Mesh file must start with `vertices`");
+    }
+
+    std::vector<Vector3D> vertices;
+    for (Vector3D vertex; input >> vertex;) {
+        vertices.push_back(vertex + position);
+    }
+    if (vertices.size() < 3) {
+        throw std::runtime_error("Mesh file must contain at least 3 vertices");
+    }
+
+    // input attempted to read "triangles" > Vector3D
+    input.clear(); // clears error bit
+
+    input >> temp; // "triangles"
+//    if (temp != "triangles") {
+//        throw std::runtime_error("Mesh file must contain `triangles`");
+//    }
+    // read each line under triangles
+    for (int a, b, c; input >> a >> b >> c;) {
+        std::unique_ptr<Object> triangle = std::make_unique<Triangle>(vertices.at(a),
+                                                                      vertices.at(b),
+                                                                      vertices.at(c),
+                                                                      material);
+        world.add(std::move(triangle));
+    }
+}
+
 void Parser::parse_camera(std::stringstream& ss) {
     if (ss >> camera_position >> camera_target >> camera_up >> camera_fov) {
         found_camera = true;

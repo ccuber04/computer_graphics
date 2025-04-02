@@ -6,8 +6,10 @@
 class Camera;
 class Pixels;
 class Material;
+class Texture;
 
 using Materials = std::map<std::string, std::unique_ptr<Material>>;
+using Textures = std::map<std::string, std::unique_ptr<Texture>>;
 
 class Parser {
 public:
@@ -27,7 +29,11 @@ private:
 
     void parse_material(std::stringstream& ss);
     Material* get_material(const std::string& material);
+    void parse_texture(std::stringstream& ss);
+    Texture* get_texture(const std::string& texture);
     void parse_sphere(std::stringstream& ss);
+    void parse_triangle(std::stringstream& ss);
+    void parse_mesh(std::stringstream& ss);
     void parse_camera(std::stringstream& ss);
     void parse_threads(std::stringstream& ss);
     void parse_rays(std::stringstream& ss);
@@ -38,6 +44,7 @@ private:
     World world;
     
     Materials materials;
+    Textures textures;
 
     Point3D camera_position, camera_target;
     Vector3D camera_up;

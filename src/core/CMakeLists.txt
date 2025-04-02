@@ -4,6 +4,7 @@ add_library(core
   hit.h hit.cpp
   material.h material.cpp
   object.h object.cpp
+  texture.h texture.cpp
   point3d.h
   random.h random.cpp
   ray.h ray.cpp

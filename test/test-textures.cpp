@@ -105,48 +105,52 @@ Color trace_path(const World& world, const Ray& ray, int depth) {
         return Black;
     }
 
-    const Material* material = hit->sphere->material;
+    const Object* sphere = hit->object;
+    auto [u, v] = sphere->uv(*hit);
+    const Material* material = sphere->material;
+    Color color = material->texture->value(u, v);
+
     if (material == nullptr) {
         throw std::runtime_error("material is nullptr");
     }
     if (material->emitting) {
-        return material->color;
+        return color;
     }
 
     // more bounces!
     Ray scattered = material->scatter(ray, hit.value());
-    return material->color * trace_path(world, scattered, depth-1);
+    return color * trace_path(world, scattered, depth-1);
 }
 
-Color trace_path_iter(const World& world, const Ray& r, int depth) {
-    Ray ray = r;
-    Color color = White;
-
-    while (depth > 0) {
-        std::optional<Hit> hit = world.find_nearest(ray);
-        if (!hit) {
-            return Black;
-        }
-
-        const Material* material = hit->sphere->material;
-        color *= material->color;
-
-        if (material->emitting) {
-            return color;
-        }
-
-        ray = material->scatter(ray, hit.value());
-
-        --depth;
-    }
-
-    if (depth == 0) {
-        return Black;
-    }
-    else {
-        return color;
-    }
-}
+//Color trace_path_iter(const World& world, const Ray& r, int depth) {
+//    Ray ray = r;
+//    Color color = White;
+//
+//    while (depth > 0) {
+//        std::optional<Hit> hit = world.find_nearest(ray);
+//        if (!hit) {
+//            return Black;
+//        }
+//
+//        const Material* material = hit->sphere->material;
+//        color *= material->color;
+//
+//        if (material->emitting) {
+//            return color;
+//        }
+//
+//        ray = material->scatter(ray, hit.value());
+//
+//        --depth;
+//    }
+//
+//    if (depth == 0) {
+//        return Black;
+//    }
+//    else {
+//        return color;
+//    }
+//}
 
 void render(const World& world, const Camera& camera, int depth, int samples, int num_threads, Pixels& pixels, bool progress) {
     const long long rays_total = pixels.rows * pixels.columns * static_cast<long long>(samples);

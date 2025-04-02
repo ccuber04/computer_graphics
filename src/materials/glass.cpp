@@ -4,8 +4,8 @@
 #include "random.h"
 #include <algorithm>
 
-Glass::Glass(Color color, bool emitting)
-    :Material{color, emitting} {}
+Glass::Glass(const Texture* texture, bool emitting)
+    :Material{texture, emitting} {}
 
 Ray Glass::scatter(const Ray& ray, const Hit& hit) const {
     double n1 = 1.0;

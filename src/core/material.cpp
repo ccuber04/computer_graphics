@@ -1,8 +1,8 @@
 #include "material.h"
 #include <cmath>
 
-Material::Material(Color color, bool emitting)
-    :color{color}, emitting{emitting} {}
+Material::Material(const Texture* texture, bool emitting)
+    :texture{texture}, emitting{emitting} {}
 
 Vector3D reflect(const Vector3D& v, const Vector3D& normal) {
     return v - 2*dot(v, normal) * normal;

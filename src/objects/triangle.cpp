@@ -3,7 +3,7 @@
 #include "constants.h"
 
 Triangle::Triangle(const Point3D& vertex0, const Point3D& vertex1, const Point3D& vertex2,
-         const Material& material)
+         const Material* material)
          :Object{material}, vertex0{vertex0}, vertex1{vertex1}, vertex2{vertex2},
          edge1{vertex1 - vertex0}, edge2{vertex2 - vertex0},
          normal{unit(cross(edge1, edge2))}{}
@@ -27,7 +27,7 @@ std::optional<double> Triangle::intersect(const Ray& ray) const {
 
     Vector3D q = cross(s, edge1);
     double v = f * dot(ray.direction, q);
-    if (v < 0.0 || v > 1.0) {
+    if (v < 0.0 || (u + v) > 1.0) {
         // ray is outside of v coords [0, 1]
         return {};
     }
@@ -41,5 +41,24 @@ std::optional<double> Triangle::intersect(const Ray& ray) const {
     }
 
 }
-// Hit Triangle::construct_hit(const Ray& ray, double time) const override;
-// std::pair<double, double> Triangle::uv(const Hit& hit) const override;
+
+Hit Triangle::construct_hit(const Ray& ray, double time) const {
+    Point3D point = ray.at(time);
+    // ensure that the ray and surface normals are pointing in
+    // opposite directions
+    bool negative = std::signbit(dot(ray.direction, normal));
+    if (negative) {
+        return Hit{time, point, normal, this};
+    }
+    else {
+        return Hit{time, point, -normal, this};
+    }
+}
+
+std::pair<double, double> Triangle::uv(const Hit& hit) const {
+    Vector3D P = hit.position - vertex0;
+    double u = dot(P, edge1) / length(edge1);
+    double v = dot(P, edge2) / length(edge2);
+    double magnitude = (u+v) / 2.0;
+    return {u / magnitude, v / magnitude};
+}

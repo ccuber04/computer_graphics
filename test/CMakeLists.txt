@@ -29,3 +29,7 @@ target_link_libraries(test-materials PRIVATE raytracer)
 
 add_executable(test-textures test-textures.cpp)
 target_link_libraries(test-textures PRIVATE raytracer)
+
+# test triangle
+add_executable(test-triangle test-triangle.cpp)
+target_link_libraries(test-triangle PRIVATE raytracer)
