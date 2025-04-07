@@ -17,7 +17,7 @@ material ground diffuse ground false
 material earth lambertian earth false
 material checkers metallic checker false 0.5
 material surface_norm specular normal false
-material glass lambertian interesting false
+material glass glass interesting false
 
 # floor
 sphere (0 0 -1000) 1000 ground
