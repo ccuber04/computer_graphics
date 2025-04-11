@@ -1,0 +1,46 @@
+# textures
+texture red solid (1 0 0)
+texture white solid (1 1 1)
+texture light solid (2 2 2)
+texture ground solid (0.5 0.5 0.5)
+
+texture grad gradient (1 0 0) (0 0 1)
+texture earth image earth.png
+texture checker checkerboard (1 1 1) (0 0 0)
+texture normal normal
+texture interesting interesting
+
+# materials
+material diffuse diffuse red false
+material light diffuse light true
+material red_light diffuse red true
+material lamb_grad lambertian grad false
+material ground diffuse ground false
+material earth lambertian earth false
+material checkers metallic checker false 0.5
+material surface_norm specular normal false
+material mirror specular white false
+material interesting_glass glass interesting false
+material white_glass glass white false
+
+# floor
+sphere (0 0 -1000) 1000 ground
+
+# sphere
+sphere (0 2 1) 0.75 red_light
+
+# rectangle
+rectangle (-6 6 6) (-6 -6 6) (-6 -6 1) (-6 6 1) light
+rectangle (-5 7 6) (5 7 6) (5 7 1) (-5 7 1) mirror
+
+# mesh
+mesh (0 2 0) cube.txt white_glass
+mesh (-3 0 0) pyramid.txt white_glass
+mesh (3 0 0) pyramid.txt interesting_glass
+
+# rendering
+threads 7
+rays 10 1000
+camera (2 -10 5) (0 0 1) (0 0 1) 90
+pixels 1280 720
+output el_cube.png

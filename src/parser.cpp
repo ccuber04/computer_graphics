@@ -5,6 +5,7 @@
 #include "pixels.h"
 #include "sphere.h"
 #include "triangle.h"
+#include "rectangle.h"
 #include "glass.h"
 #include "metallic.h"
 #include "lambertian.h"
@@ -83,6 +84,9 @@ void Parser::parse(std::ifstream& input) {
             }
             else if (type == "triangle") {
                 parse_triangle(ss);
+            }
+            else if (type == "rectangle") {
+                parse_rectangle(ss);
             }
             else if (type == "mesh") {
                 parse_mesh(ss);
@@ -256,6 +260,19 @@ void Parser::parse_triangle(std::stringstream& ss) {
     }
     else {
         throw std::runtime_error("Malformed triangle");
+    }
+}
+
+void Parser::parse_rectangle(std::stringstream& ss) {
+    Vector3D v0, v1, v2, v3;
+    std::string material_name;
+    if (ss >> v0 >> v1 >> v2 >> v3 >> material_name) {
+        const Material* material = get_material(material_name);
+        std::unique_ptr<Object> object = std::make_unique<Rectangle>(v0, v1, v2, v3, material);
+        world.add(std::move(object));
+    }
+    else {
+        throw std::runtime_error("Malformed rectangle");
     }
 }
 
