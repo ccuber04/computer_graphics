@@ -8,6 +8,7 @@ add_library(raytracer
   camera.h camera.cpp
   parser.h parser.cpp
   world.h world.cpp
+  bvh.h bvh.cpp
 )
 target_include_directories(raytracer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(raytracer PUBLIC core image objects materials textures)

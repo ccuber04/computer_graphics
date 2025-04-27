@@ -39,7 +39,7 @@ bool AABB::intersect(const Ray& ray) const {
 
     d = 1.0 / ray.direction.z;
     t0 = (minimum.z - ray.origin.z) * d;
-    t0 = (maximum.z - ray.origin.z) * d;
+    t1 = (maximum.z - ray.origin.z) * d;
     if (d < 0.0) {
         std::swap(t0, t1);
     }
@@ -58,9 +58,9 @@ AABB surrounding_box(const AABB& box0, const AABB& box1) {
     Point3D small{std::min(box0.minimum.x, box1.minimum.x),
                   std::min(box0.minimum.y, box1.minimum.y),
                   std::min(box0.minimum.z, box1.minimum.z)};
-    Point3D big{std::min(box0.maximum.x, box1.maximum.x),
-                  std::min(box0.maximum.y, box1.maximum.y),
-                  std::min(box0.maximum.z, box1.maximum.z)};
+    Point3D big{std::max(box0.maximum.x, box1.maximum.x),
+                  std::max(box0.maximum.y, box1.maximum.y),
+                  std::max(box0.maximum.z, box1.maximum.z)};
 
     return AABB{small, big}; // applies the epsilon
 }

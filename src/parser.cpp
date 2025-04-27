@@ -16,6 +16,8 @@
 #include "image.h"
 #include "normal.h"
 #include "interesting.h"
+#include "isotropic.h"
+#include "constant_medium.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -87,6 +89,9 @@ void Parser::parse(std::ifstream& input) {
             }
             else if (type == "rectangle") {
                 parse_rectangle(ss);
+            }
+            else if (type == "constant_medium") {
+                parse_constant_medium(ss);
             }
             else if (type == "mesh") {
                 parse_mesh(ss);
@@ -163,6 +168,9 @@ void Parser::parse_material(std::stringstream& ss) {
     }
     else if (kind == "glass") {
         materials[name] = std::make_unique<Glass>(texture, emitting);
+    }
+    else if (kind == "isotropic") {
+        materials[name] = std::make_unique<Isotropic>(texture, emitting);
     }
     else {
         throw std::runtime_error("Unknown material: " + kind);
@@ -273,6 +281,22 @@ void Parser::parse_rectangle(std::stringstream& ss) {
     }
     else {
         throw std::runtime_error("Malformed rectangle");
+    }
+}
+
+void Parser::parse_constant_medium(std::stringstream& ss) {
+    // only allows for spherical boundaries
+    Vector3D center;
+    double radius, density;
+    std::string material_name;
+    if (ss >> center >> radius >> density >> material_name) {
+        const Material* material = get_material(material_name);
+        auto boundary = new Sphere{center, radius, material};
+        std::unique_ptr<Object> object = std::make_unique<ConstantMedium>(boundary, density, material);
+        world.add(std::move(object));
+    }
+    else {
+        throw std::runtime_error("Malformed constant_medium");
     }
 }
 
