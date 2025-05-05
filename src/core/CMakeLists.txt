@@ -11,6 +11,7 @@ add_library(core
   ray.h ray.cpp
   vector3d.h vector3d.cpp
   xorshiftrplus.h xorshiftrplus.cpp
+  noise.h noise.cpp
 )
 
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

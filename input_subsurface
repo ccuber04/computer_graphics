@@ -3,7 +3,6 @@ texture red_light solid (1 0.8984 0)
 texture light solid (2 2 2)
 texture grey solid (0.5 0.5 0.5)
 
-texture beige solid (0.9 0.6 0.4)
 texture skin solid (0.9 0.45 0.35)
 texture wax solid (1 0.8 0.6)
 texture white_marble solid (0.9 0.9 0.9)
@@ -21,8 +20,6 @@ material ground diffuse grey false
 material marble_lamb lambertian marble false
 material marble subsurface marble false 5.0
 
-material beige_lamb lambertian beige false
-material beige subsurface beige false 5.0
 material skin_lamb lambertian skin false
 material skin subsurface skin false 1.0
 material wax_lamb lambertian wax false
@@ -40,24 +37,20 @@ material cheese subsurface cheese false 1.0
 sphere (0 0 -1000) 1000 ground
 
 # light
-# rectangle (2 1 10) (-2 1 10) (-2 1 0) (2 1 0) light
-# rectangle (2 1 11) (-2 1 11) (-2 1 10) (2 1 10) light
+rectangle (2 1 10) (-2 1 10) (-2 1 0) (2 1 0) red_light
+rectangle (2 1 11) (-2 1 11) (-2 1 10) (2 1 10) light
 # rectangle (6 -5 5) (5 5 5) (5 5 0) (6 -5 0) red_light
 # rectangle (-6 -5 5) (-5 5 5) (-5 5 0) (-6 -5 0) red_light
-sphere (1.8 1 1) 0.5 light
+sphere (2 1 1) 0.5 light
 sphere (-2 1 0.2) 0.5 light
 
 # spheres
-# sphere (1.5 0 1) 1 skin
-# sphere (-1.5 0 1) 1 skin_lamb
-
-# mesh
-mesh (-1.5 0 0) pyramid.txt beige_lamb
-mesh (1.5 0 0) pyramid.txt beige
+sphere (1.5 0 1) 1 jade
+sphere (-1.5 0 1) 1 jade_lamb
 
 # rendering
 threads 9
 rays 10 1000
 camera (0 -5 2) (0 0 1) (0 0 1) 90
 pixels 1280 720
-output subsurface17.png
+output subsurface13.png

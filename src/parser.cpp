@@ -10,12 +10,14 @@
 #include "metallic.h"
 #include "lambertian.h"
 #include "specular.h"
+#include "subsurface.h"
 #include "solid.h"
 #include "gradient.h"
 #include "checkerboard.h"
 #include "image.h"
 #include "normal.h"
 #include "interesting.h"
+#include "marble.h"
 #include "isotropic.h"
 #include "constant_medium.h"
 #include <algorithm>
@@ -172,6 +174,15 @@ void Parser::parse_material(std::stringstream& ss) {
     else if (kind == "isotropic") {
         materials[name] = std::make_unique<Isotropic>(texture, emitting);
     }
+    else if (kind == "subsurface") {
+        double density;
+        if (ss >> density) {
+            materials[name] = std::make_unique<SubsurfaceScattering>(texture, emitting, density);
+        }
+        else {
+            throw std::runtime_error("Missing density for subsurface");
+        }
+    }
     else {
         throw std::runtime_error("Unknown material: " + kind);
     }
@@ -228,6 +239,9 @@ void Parser::parse_texture(std::stringstream& ss) {
     }
     else if (kind == "interesting") {
         textures[name] = std::make_unique<Interesting>();
+    }
+    else if (kind == "marble") {
+        textures[name] = std::make_unique<Marble>();
     }
     else {
         throw std::runtime_error("Unknown texture: " + kind);
